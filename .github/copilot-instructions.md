@@ -2,6 +2,51 @@
 
 Keycloakify v11 — React + TypeScript + Vite. Build custom Keycloak login themes → `.jar`.
 
+## 📚 Documentation Workflow
+
+**⚠️ CRITICAL: ALWAYS read documentation BEFORE working on Keycloakify tasks!**
+
+### Step-by-Step Workflow
+
+1. **Start with TOC** → Read [TABLE_OF_CONTENTS.md](../Guide_Keycloak_From_Docs/TABLE_OF_CONTENTS.md)
+   - Understand what's covered in guide (2357 lines)
+   - Get line numbers for relevant sections
+   
+2. **Jump to Relevant Section** → Use line numbers to read specific content
+   ```bash
+   # Example: Need CSS customization info
+   # TOC shows: Section 3 (lines 107-228)
+   code Guide_Keycloak_From_Docs/KEYCLOAKIFY_COMPLETE_GUIDE.md:107
+   ```
+
+3. **If Info NOT in Guide** → Search externally
+   - **Official Docs**: https://docs.keycloakify.dev/ (primary source)
+   - **Context7**: Latest API updates
+   - **Web Search**: Community solutions
+   - **Always cite source** with URL
+
+4. **Reference Line Numbers** in responses
+   ```markdown
+   ✅ Good: "For CSS customization, see Section 3 (lines 107-228)"
+   ❌ Bad: "The guide mentions CSS customization somewhere"
+   ```
+
+### Documentation Files
+
+- **[KEYCLOAKIFY_COMPLETE_GUIDE.md](../Guide_Keycloak_From_Docs/KEYCLOAKIFY_COMPLETE_GUIDE.md)** (2357 lines) — Complete Vietnamese guide
+  - All setup, CSS, testing, i18n, advanced features
+  - FAQ with 7 common questions
+  - Compiler options reference (Appendix A)
+  
+- **[TABLE_OF_CONTENTS.md](../Guide_Keycloak_From_Docs/TABLE_OF_CONTENTS.md)** — Navigation index
+  - Section summaries with line numbers
+  - "What's covered" vs "Search externally" guide
+  - AI agent lookup strategy
+
+- **This file** — Coding conventions & quick reference
+
+---
+
 ## Architecture
 
 - `src/kc.gen.tsx` — **auto-generated, KHÔNG sửa**
@@ -134,97 +179,32 @@ killall -9 chrome     # ❌ Force kill ALL Chrome
 
 **Why**: User cần review changes trước khi commit. Commit message phải meaningful và có context.
 
+---
+
 ## Advanced Features
 
-### Dark Mode Persistence
+For detailed guides on advanced Keycloakify features, see [KEYCLOAKIFY_COMPLETE_GUIDE.md](../Guide_Keycloak_From_Docs/KEYCLOAKIFY_COMPLETE_GUIDE.md):
 
-Pass theme state từ app sang login theme qua query params:
+- **Dark Mode Persistence** (Section 6.6, lines 701-788) — App ↔ Login theme communication
+- **Theme Variants** (Section 8.1, lines 1040-1088) — Multiple themes from single codebase
+- **Environment Variables** (Section 8.2, lines 1090-1165) — Pass env vars to theme
+- **Account Theme** (Section 10.2, lines 1469-1515) — Single-Page vs Multi-Page
+- **Email Theme** (Section 10.3, lines 1517-1558) — jsx-email vs FreeMarker
+- **Admin Theme** (Section 10.4, lines 1560-1577) — Custom Admin Console
+- **Compiler Options** (Appendix A, lines 2227-2342) — Complete reference table
 
-```tsx
-// App redirects to Keycloak
-window.location.href = keycloakLoginUrl + "?kc_theme_name=dark";
-```
-
-Read trong theme:
-```tsx
-const isDark = kcContext.themeProperties?.darkMode === "true";
-```
-
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#66-dark-mode-persistence]
-
-### Theme Variants
-
-Build nhiều theme variants từ 1 codebase (ví dụ: light/dark, brand A/B):
-
-```ts
-// vite.config.ts
-keycloakify({
-  themeName: ["my-theme-light", "my-theme-dark"]
-})
-```
-
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#81-theme-variants]
-
-### Environment Variables
-
-Pass env vars từ Keycloak server vào theme:
-
-```ts
-// vite.config.ts
-keycloakify({
-  environmentVariables: [
-    { name: "API_URL", default: "https://api.example.com" }
-  ]
-})
-```
-
-Access trong theme: `import.meta.env.API_URL`
-
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#82-environment-variables]
-
-### Account Theme
-
-**2 loại:**
-- **Single-Page** (account v3) - Keycloak 25+, backward compatible, React router
-- **Multi-Page** (account v1) - Traditional, maintained by Keycloakify
-
+Quick reference:
 ```bash
-npx keycloakify initialize-account-theme
-# Chọn: single-page (recommended) hoặc multi-page
+npx keycloakify initialize-account-theme  # Account theme setup
+npx keycloakify initialize-email-theme    # Email theme setup
+npx keycloakify initialize-admin-theme    # Admin theme setup (React only)
 ```
 
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#102-account-theme]
-
-### Email Theme
-
-**2 approaches:**
-
-1. **keycloakify-emails plugin** (jsx-email, Vite-only):
-```bash
-npm install keycloakify-emails jsx-email
-```
-
-2. **Native FreeMarker**:
-```bash
-npx keycloakify initialize-email-theme
-```
-
-Assets: `src/email/resources/` → reference với `${url.resourcesUrl}/file.png`
-
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#103-email-theme]
-
-### Admin Theme
-
-Custom Keycloak Admin Console UI (React only):
-
-```bash
-npx keycloakify initialize-admin-theme
-```
-
-📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#104-admin-theme]
+---
 
 ## Resources
 
-- 📘 [KEYCLOAKIFY_COMPLETE_GUIDE.md](../KEYCLOAKIFY_COMPLETE_GUIDE.md) - Chi tiết đầy đủ (2200+ lines)
+- 📘 [KEYCLOAKIFY_COMPLETE_GUIDE.md](../Guide_Keycloak_From_Docs/KEYCLOAKIFY_COMPLETE_GUIDE.md) - Chi tiết đầy đủ (2357 lines)
 - 📖 [docs.keycloakify.dev](https://docs.keycloakify.dev) - Official docs
 - 💬 [Discord](https://discord.gg/kYFZG7fQmn) - Community support
+
