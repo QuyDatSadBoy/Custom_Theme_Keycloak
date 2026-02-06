@@ -133,3 +133,98 @@ killall -9 chrome     # ❌ Force kill ALL Chrome
 - ❌ `git rebase` - NEVER rebase without permission
 
 **Why**: User cần review changes trước khi commit. Commit message phải meaningful và có context.
+
+## Advanced Features
+
+### Dark Mode Persistence
+
+Pass theme state từ app sang login theme qua query params:
+
+```tsx
+// App redirects to Keycloak
+window.location.href = keycloakLoginUrl + "?kc_theme_name=dark";
+```
+
+Read trong theme:
+```tsx
+const isDark = kcContext.themeProperties?.darkMode === "true";
+```
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#66-dark-mode-persistence]
+
+### Theme Variants
+
+Build nhiều theme variants từ 1 codebase (ví dụ: light/dark, brand A/B):
+
+```ts
+// vite.config.ts
+keycloakify({
+  themeName: ["my-theme-light", "my-theme-dark"]
+})
+```
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#81-theme-variants]
+
+### Environment Variables
+
+Pass env vars từ Keycloak server vào theme:
+
+```ts
+// vite.config.ts
+keycloakify({
+  environmentVariables: [
+    { name: "API_URL", default: "https://api.example.com" }
+  ]
+})
+```
+
+Access trong theme: `import.meta.env.API_URL`
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#82-environment-variables]
+
+### Account Theme
+
+**2 loại:**
+- **Single-Page** (account v3) - Keycloak 25+, backward compatible, React router
+- **Multi-Page** (account v1) - Traditional, maintained by Keycloakify
+
+```bash
+npx keycloakify initialize-account-theme
+# Chọn: single-page (recommended) hoặc multi-page
+```
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#102-account-theme]
+
+### Email Theme
+
+**2 approaches:**
+
+1. **keycloakify-emails plugin** (jsx-email, Vite-only):
+```bash
+npm install keycloakify-emails jsx-email
+```
+
+2. **Native FreeMarker**:
+```bash
+npx keycloakify initialize-email-theme
+```
+
+Assets: `src/email/resources/` → reference với `${url.resourcesUrl}/file.png`
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#103-email-theme]
+
+### Admin Theme
+
+Custom Keycloak Admin Console UI (React only):
+
+```bash
+npx keycloakify initialize-admin-theme
+```
+
+📖 Chi tiết: [KEYCLOAKIFY_COMPLETE_GUIDE.md#104-admin-theme]
+
+## Resources
+
+- 📘 [KEYCLOAKIFY_COMPLETE_GUIDE.md](../KEYCLOAKIFY_COMPLETE_GUIDE.md) - Chi tiết đầy đủ (2200+ lines)
+- 📖 [docs.keycloakify.dev](https://docs.keycloakify.dev) - Official docs
+- 💬 [Discord](https://discord.gg/kYFZG7fQmn) - Community support

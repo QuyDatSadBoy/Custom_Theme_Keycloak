@@ -284,6 +284,34 @@ export const InChinese: Story = {
 };
 ```
 
+#### **Alternative: Testing Trong Dev Mode (Không Dùng Storybook)**
+
+Nếu không muốn setup Storybook, bạn có thể test trực tiếp trong dev server bằng cách mock `kcContext` trong `main.tsx`:
+
+```tsx
+// src/main.tsx
+import { KcPage } from "./login/KcPage";
+
+// Uncomment block này để preview trong dev mode
+const debugContext = {
+    pageId: "login.ftl",
+    locale: { currentLanguageTag: "en" },
+    // ... thêm mock properties
+} satisfies KcContext;
+
+if (import.meta.env.DEV) {
+    createRoot(document.getElementById("root")!).render(
+        <KcPage kcContext={debugContext} />
+    );
+}
+```
+
+**⚠️ Lưu ý**: Comment lại mock code trước khi build production!
+
+📖 **Docs**: [Testing Guide](https://docs.keycloakify.dev/testing)
+
+---
+
 ### 4.2. Testing Inside of Keycloak (Docker)
 
 #### **Prerequisites**
@@ -340,12 +368,26 @@ Sau khi login với `testuser/password123`, bạn sẽ được redirect tới p
 
 #### **Advanced Options**
 
-```bash
-# Custom Keycloak image, load extensions, import realm config
-npx keycloakify start-keycloak --help
+Để customize Docker container behavior, dùng `startKeycloakOptions` trong `vite.config.ts`:
+
+```ts
+// vite.config.ts
+keycloakify({
+  startKeycloakOptions: {
+    dockerImage: "quay.io/keycloak/keycloak:25.0.2", // Pin specific version
+    extensionJars: ["./path/to/custom-extension.jar"], // Load custom extensions
+    realmJsonFilePath: "./my-realm.json", // Use custom realm config
+    port: 8081 // Change port if 8080 is occupied
+  }
+})
 ```
 
-Reference: [startKeycloakOptions](https://docs.keycloakify.dev/features/compiler-options/startkeycloakoptions)
+📖 **Chi tiết đầy đủ**: Xem [Appendix A: startKeycloakOptions](#startkeycloakoptions-breakdown)
+
+```bash
+# Hoặc CLI help
+npx keycloakify start-keycloak --help
+```
 
 ---
 
@@ -1920,35 +1962,59 @@ public/
 
 **Answer**: ✅ **Safe** - No sensitive data included
 
-`window.kcContext` chỉ chứa:
-- Page ID (`pageId: "login.ftl"`)
-- Realm display name
-- Client ID
-- User profile attributes
-- Social providers list
-- Theme messages
+**Security by Design**:
+
+Keycloakify [shifts page generation from backend to client](https://github.com/keycloakify/keycloakify/discussions/346#discussioncomment-5889791). `window.kcContext` chỉ chứa information **necessary** để render UI pages.
+
+**What's INCLUDED** (typical register.ftl example):
+
+```json
+{
+  "pageId": "register.ftl",
+  "realm": {
+    "name": "myrealm",
+    "displayName": "My Realm",
+    "internationalizationEnabled": true,
+    "registrationEmailAsUsername": false
+    // ⚠️ "attributes" is EXCLUDED by default
+  },
+  "url": { /* action URLs */ },
+  "messagesPerField": { /* validation errors */ },
+  "locale": { "currentLanguageTag": "en" },
+  "themeVersion": "1.0.0"
+}
+```
 
 **What's NOT included**:
 - ❌ Passwords
-- ❌ Secrets
-- ❌ Private keys
+- ❌ Secrets / Private keys
 - ❌ Database credentials
+- ❌ Sensitive realm attributes (hidden by default)
 
 **Filtering specific values**:
 
-Nếu vẫn muốn hide specific properties, dùng compiler option:
+Nếu bạn có **custom Keycloak plugin** (ví dụ: [keycloak-email-whitelisting](https://github.com/micedre/keycloak-mail-whitelisting)) thêm extra values, bạn có thể hide chúng:
 
 ```tsx
 // vite.config.ts
 keycloakify({
-  kcContextExclusionsFtl: [
-    "realm.displayName",
-    "social.providers"
-  ]
+  kcContextExclusionsFtl: `
+    <#if (
+        xKeycloakify.pageId == "register.ftl" &&
+        ["actionTokenGeneratedByUserLifespanMinutes"]?seq_contains(key) &&
+        areSamePath(path, ["realm"])
+    )>
+        <#continue>
+    </#if>
+  `
 })
 ```
 
-📖 **Docs**: [kcContextExclusionsFtl](https://doc-old.keycloakify.dev/features/compiler-options/kccontextexclusionsftl)
+**Advanced Control**: Take ownership của FreeMarker template `kcContextDeclarationTemplate.ftl` dùng [patch-package](https://www.npmjs.com/package/patch-package) để control exact properties exposed.
+
+📖 **Docs**: 
+- [kcContextExclusionsFtl Reference](https://docs.keycloakify.dev/features/compiler-options/kccontextexclusionsftl)
+- [Architecture Discussion](https://github.com/keycloakify/keycloakify/discussions/346#discussioncomment-5889791)
 
 ---
 
@@ -2158,6 +2224,122 @@ killall chrome        # ❌ Same problem
 
 ---
 
+## 📚 Appendix A: Compiler Options Reference
+
+**Location**: `vite.config.ts` hoặc `webpack.config.js`
+
+### Overview
+
+Tất cả compiler options được pass vào `keycloakify()` plugin:
+
+```ts
+// vite.config.ts
+import { keycloakify } from "keycloakify/vite-plugin";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    keycloakify({
+      // Options ở đây
+    })
+  ]
+});
+```
+
+### Complete Options Table
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| **themeName** | `string \| string[]` | `package.json["name"]` | Theme name hiển thị trong Keycloak Admin UI. Dùng array để tạo [theme variants](https://docs.keycloakify.dev/features/theme-variants) |
+| **keycloakVersionTargets** | `object` | Auto-detect | Customize JAR builds cho specific Keycloak versions. Xem [docs](https://docs.keycloakify.dev/features/compiler-options/keycloakversiontargets) |
+| **environmentVariables** | `Array<{name, default}>` | `[]` | Pass env vars vào theme via `import.meta.env.VAR_NAME`. Xem [Section 8.2](#82-environment-variables) |
+| **kcContextExclusionsFtl** | `string \| path` | - | FreeMarker code để hide sensitive data từ `window.kcContext`. Xem [Section 12.1 FAQ Q3](#121-faq) |
+| **startKeycloakOptions** | `object` | - | Config Docker testing container. Xem [detailed table below](#startkeycloakoptions-breakdown) |
+| **accountThemeImplementation** | `"Single-Page" \| "Multi-Page" \| "none"` | `"Single-Page"` | Account theme type. `"none"` = no account theme. Xem [Section 10.2](#102-account-theme) |
+| **themeVersion** | `string` | `package.json["version"]` | Theme version hiển thị trong Keycloak |
+| **postBuild** | `function` | - | Hook chạy sau khi build hoàn tất |
+| **XDG_CACHE_HOME** | `string` | System default | Override cache directory cho build artifacts |
+| **keycloakifyBuildDirPath** | `string` | `dist_keycloak/` | Output directory cho `.jar` files |
+| **groupId** | `string` | `keycloakify` | Maven groupId cho JAR file metadata |
+| **artifactId** | `string` | `themeName` | Maven artifactId cho JAR file metadata |
+
+---
+
+### startKeycloakOptions Breakdown
+
+**Purpose**: Configure Keycloak Docker container khi chạy `npx keycloakify start-keycloak`
+
+**Usage Example**:
+
+```ts
+// vite.config.ts
+keycloakify({
+  accountThemeImplementation: "none",
+  startKeycloakOptions: {
+    // Tất cả options đều optional
+    
+    // 1. Custom Docker Image
+    dockerImage: "quay.io/phasetwo/phasetwo-keycloak:25.0.2.1721752809",
+    // Default: quay.io/keycloak/keycloak (CLI asks for version)
+    
+    // 2. Extra Docker Arguments
+    dockerExtraArgs: [
+      "-e", "KC_HTTP_RELATIVE_PATH=/auth"
+    ],
+    
+    // 3. Extra Keycloak Startup Arguments
+    keycloakExtraArgs: [
+      "--spi-email-template-provider=freemarker-plus-mustache",
+      "--spi-email-template-freemarker-plus-mustache-enabled=true",
+      "--spi-theme-cache-themes=false"
+    ],
+    
+    // 4. Load Custom Extensions
+    extensionJars: [
+      // URL hoặc local path
+      "https://github.com/InseeFr/Keycloak-FranceConnect/releases/download/6.2.0/keycloak-franceconnect-6.2.0.jar",
+      "./keycloak-resources/keycloak-mail-whitelisting-2.0.jar"
+    ],
+    
+    // 5. Custom Realm Configuration
+    realmJsonFilePath: "./keycloak-resources/myrealm-realm.json",
+    // Default: Pre-configured realm với testuser/password123
+    
+    // 6. Custom Port
+    port: 8081
+    // Default: 8080
+  }
+})
+```
+
+**Resulting Docker Command**:
+
+```bash
+docker run -p 8081:8080 \
+  -e KC_HTTP_RELATIVE_PATH=/auth \
+  -v ./keycloak-resources/keycloak-mail-whitelisting-2.0.jar:/opt/keycloak/providers/ext1.jar \
+  -v ./keycloak-resources/myrealm-realm.json:/opt/keycloak/data/import/realm.json \
+  quay.io/phasetwo/phasetwo-keycloak:25.0.2.1721752809 \
+  start-dev \
+  --spi-email-template-provider=freemarker-plus-mustache \
+  --import-realm
+```
+
+**Common Use Cases**:
+
+| Scenario | Options to Use |
+|----------|----------------|
+| **Load custom Keycloak extension** | `extensionJars: ["path/to/extension.jar"]` |
+| **Test với Phase Two Keycloak** | `dockerImage: "quay.io/phasetwo/phasetwo-keycloak:TAG"` |
+| **Persist realm config changes** | `realmJsonFilePath: "./my-realm.json"` ([video tutorial](https://www.youtube.com/watch?v=lMOLrdqilqE&t=991s)) |
+| **Change Keycloak context path** | `dockerExtraArgs: ["-e", "KC_HTTP_RELATIVE_PATH=/auth"]` |
+| **Disable theme caching** | `keycloakExtraArgs: ["--spi-theme-cache-themes=false"]` |
+| **Port conflict (8080 đang dùng)** | `port: 8081` |
+
+📖 **Docs**: [Full startKeycloakOptions Reference](https://docs.keycloakify.dev/features/compiler-options/startkeycloakoptions)
+
+---
+
 ## 🎓 Next Steps
 
 1. ✅ **Clone starter & run Storybook**
@@ -2170,10 +2352,8 @@ killall chrome        # ❌ Same problem
 ### Advanced Topics (tự explore)
 
 - [Compiler Options](https://docs.keycloakify.dev/features/compiler-options)
-- [keycloakVersionTargets](https://docs.keycloakify.dev/features/compiler-options/keycloakversiontargets)
-- [startKeycloakOptions](https://docs.keycloakify.dev/features/compiler-options/startkeycloakoptions)
-- [themeName](https://docs.keycloakify.dev/features/compiler-options/themename)
 - [CI/CD với GitHub Actions](https://github.com/keycloakify/keycloakify-starter/blob/main/.github/workflows/ci.yaml)
+- [Patch-package cho kcContext customization](https://docs.keycloakify.dev/features/compiler-options/kccontextexclusionsftl#setting-up-patch-package)
 
 ---
 
