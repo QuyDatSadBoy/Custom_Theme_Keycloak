@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Tailwind CSS v4 - Custom configuration via CSS */
+
+/* Theme Configuration */
+@theme {
+  /* Colors */
+  --color-primary: #6366F1;
+  --color-secondary: #818CF8;
+  --color-cta: #10B981;
+  --color-background: #F5F3FF;
+  --color-text: #1E1B4B;
+  
+  /* Fonts */
+  --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  
+  /* Spacing & Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}

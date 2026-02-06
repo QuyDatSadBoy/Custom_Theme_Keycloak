@@ -1,0 +1,524 @@
+/* Import Google Fonts - Poppins & Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Tailwind CSS v4 Integration */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6366F1;
+  --color-secondary: #818CF8;
+  --color-cta: #10B981;
+}
+
+/* Glassmorphism Design System - Authentication Theme */
+/* Design: Modern, professional Glassmorphism with Indigo/Emerald palette */
+
+:root {
+    /* Color Palette */
+    --primary: #6366F1;
+    --secondary: #818CF8;
+    --cta: #10B981;
+    --background: #F5F3FF;
+    --text: #1E1B4B;
+    --text-muted: #475569;
+    --border: rgba(255, 255, 255, 0.2);
+    
+    /* Typography */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+    
+    /* Glassmorphism Effects */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-blur: 20px;
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #1E1B4B;
+        --text: #F5F3FF;
+        --text-muted: #94A3B8;
+        --glass-bg: rgba(30, 27, 75, 0.75);
+        --border: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Body and Background */
+body.kcBodyClass {
+    background: url(./pages/assets/background.jpg) no-repeat center center fixed;
+    background-size: cover;
+    font-family: var(--font-body);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 1rem;
+}
+
+/* Main Login Container - Glassmorphism */
+.kcLoginClass {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Header with Logo */
+#kc-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+#kc-header-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-image {
+    max-width: 180px;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+}
+
+/* Form Card - Glassmorphism Effect */
+.kcFormCardClass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Light reflection effect */
+.kcFormCardClass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+/* Form Header */
+.kcFormHeaderClass {
+    margin-bottom: 2rem;
+}
+
+#kc-page-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+}
+
+/* Form Groups */
+.kcFormGroupClass {
+    margin-bottom: 1.5rem;
+}
+
+.kcLabelClass {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+/* Input Fields */
+.kcInputClass {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.kcInputClass:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 1);
+}
+
+.kcInputClass::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* Buttons - Primary CTA */
+.kcButtonClass {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: none;
+    color: white;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.kcButtonClass:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.kcButtonClass:active {
+    transform: translateY(0);
+}
+
+.kcButtonClass:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.kcButtonClass:disabled {
+    background: rgba(148, 163, 184, 0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Secondary Button */
+.kcButtonSecondaryClass {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    box-shadow: none;
+}
+
+.kcButtonSecondaryClass:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* CTA Button (for special actions) */
+.kcButtonCTAClass {
+    background: linear-gradient(135deg, var(--cta) 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.kcButtonCTAClass:hover {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--secondary);
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Alert Messages */
+.kcAlertClass {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    backdrop-filter: blur(10px);
+    font-family: var(--font-body);
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #059669;
+}
+
+.alert-error,
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #DC2626;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #D97706;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #2563EB;
+}
+
+/* Checkbox and Radio */
+.kcCheckboxInputClass,
+.kcRadioInputClass {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.kcCheckboxInputClass:checked,
+.kcRadioInputClass:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.kcCheckboxInputClass:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: bold;
+}
+
+.kcRadioInputClass {
+    border-radius: 50%;
+}
+
+/* Info Section */
+.kcSignUpClass {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.kcInfoAreaWrapperClass {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Language Selector - Top Right of Screen */
+#kc-locale {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+}
+
+.kcLocaleWrapperClass {
+    position: relative;
+}
+
+#kc-current-locale-link {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    border-radius: 10px;
+    padding: 0.625rem 1.25rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(31, 38, 135, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#kc-current-locale-link:hover {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(31, 38, 135, 0.15);
+}
+
+#kc-current-locale-link:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Add globe icon using pseudo-element */
+#kc-current-locale-link::before {
+    content: '🌐';
+    font-size: 1rem;
+}
+
+/* Hide dropdown by default */
+.kcLocaleListClass {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    min-width: 180px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    list-style: none;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+/* Show dropdown when button is expanded */
+#kc-current-locale-link[aria-expanded="true"] + .kcLocaleListClass,
+.kcLocaleDropDownClass:hover .kcLocaleListClass,
+.kcLocaleListClass:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Custom scrollbar for language list */
+.kcLocaleListClass::-webkit-scrollbar {
+    width: 6px;
+}
+
+.kcLocaleListClass::-webkit-scrollbar-track {
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 10px;
+}
+
+.kcLocaleListClass::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+}
+
+.kcLocaleListClass::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.5);
+}
+
+.kcLocaleListItemClass {
+    margin: 0;
+}
+
+.kcLocaleItemClass {
+    display: block;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.kcLocaleItemClass:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    text-decoration: none;
+    transform: translateX(4px);
+}
+
+.kcLocaleItemClass:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
+/* Responsive adjustments for language selector */
+@media (max-width: 768px) {
+    #kc-locale {
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    #kc-current-locale-link {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+    
+    .kcLocaleListClass {
+        min-width: 160px;
+        max-height: 300px;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kcFormCardClass {
+        padding: 2rem 1.5rem;
+    }
+    
+    #kc-page-title {
+        font-size: 1.5rem;
+    }
+    
+    .logo-image {
+        max-width: 140px;
+    }
+}
+
+@media (max-width: 375px) {
+    body.kcBodyClass {
+        padding: 0.5rem;
+    }
+    
+    .kcFormCardClass {
+        padding: 1.5rem 1rem;
+        border-radius: 16px;
+    }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Ensure focus visibility for accessibility */
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Reset default styles that might interfere */
+.kcFormCardClass * {
+    box-sizing: border-box;
+}
