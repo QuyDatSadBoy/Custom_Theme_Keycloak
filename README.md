@@ -1,59 +1,56 @@
-<p align="center">
-    <i>🚀 <a href="https://keycloakify.dev">Keycloakify</a> v11 starter 🚀</i>
-    <br/>
-    <br/>
-</p>
+# Keycloak Custom Theme - MIC ACE
 
-# Quick start
+Custom login theme cho Keycloak, build bằng [Keycloakify](https://keycloakify.dev) v11 (React + TypeScript + Vite).
 
-```bash
-git clone https://github.com/keycloakify/keycloakify-starter
-cd keycloakify-starter
-yarn install # Or use an other package manager, just be sure to delete the yarn.lock if you use another package manager.
-```
+## Yêu cầu
 
-# Testing the theme locally
+- Node.js >= 18
+- Maven + Java (`sudo apt-get install maven`)
+- Docker
 
-[Documentation](https://docs.keycloakify.dev/testing-your-theme)
-
-# How to customize the theme
-
-[Documentation](https://docs.keycloakify.dev/css-customization)
-
-# Building the theme
-
-You need to have [Maven](https://maven.apache.org/) installed to build the theme (Maven >= 3.1.1, Java >= 7).  
-The `mvn` command must be in the $PATH.
-
--   On macOS: `brew install maven`
--   On Debian/Ubuntu: `sudo apt-get install maven`
--   On Windows: `choco install openjdk` and `choco install maven` (Or download from [here](https://maven.apache.org/download.cgi))
+## 1. Build theme
 
 ```bash
+npm install
 npm run build-keycloak-theme
 ```
 
-Note that by default Keycloakify generates multiple .jar files for different versions of Keycloak.  
-You can customize this behavior, see documentation [here](https://docs.keycloakify.dev/features/compiler-options/keycloakversiontargets).
+Output: `dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar`
 
-# Initializing the account theme
-
-```bash
-npx keycloakify initialize-account-theme
-```
-
-# Initializing the email theme
+## 2. Build Docker image
 
 ```bash
-npx keycloakify initialize-email-theme
+docker build -t keycloak-micace-theme .
 ```
 
-# GitHub Actions
+## 3. Chạy
 
-The starter comes with a generic GitHub Actions workflow that builds the theme and publishes
-the jars [as GitHub releases artifacts](https://github.com/keycloakify/keycloakify-starter/releases/tag/v10.0.0).  
-To release a new version **just update the `package.json` version and push**.
+### Option A: Dev nhanh (không cần DB)
 
-To enable the workflow go to your fork of this repository on GitHub then navigate to:
-`Settings` > `Actions` > `Workflow permissions`, select `Read and write permissions`.
-# Custom_Theme_Keycloak
+```bash
+docker run --rm -p 8080:8080 \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+  keycloak-micace-theme start-dev
+```
+
+### Option B: Compose + PostgreSQL có sẵn
+
+Sửa `.env` cho đúng config DB, rồi:
+
+```bash
+docker compose up
+```
+
+## 4. Kích hoạt theme
+
+1. Vào http://localhost:8080/admin
+2. Login `admin` / `admin`
+3. Tạo hoặc chọn Realm (không dùng master)
+4. **Realm Settings → Themes → Login Theme → keycloakify-starter**
+
+## Dev & Preview
+
+```bash
+npm run storybook    # Preview trên port 6006
+```

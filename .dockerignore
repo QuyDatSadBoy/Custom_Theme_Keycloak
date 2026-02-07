@@ -1,0 +1,9 @@
+node_modules
+dist
+.storybook
+.env
+.git
+.github
+*.md
+Guide_Keycloak_From_Docs
+LICENSE
